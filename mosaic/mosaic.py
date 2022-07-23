@@ -27,6 +27,10 @@ spec.description.output[0].shortDescription = "ArgMax"
 # set it back.
 spec.description.output[0].type.multiArrayType.dataType = ArrayFeatureType.INT32
 
+spec.description.output[0].type.multiArrayType.shape.append(1)
+spec.description.output[0].type.multiArrayType.shape.append(512)
+spec.description.output[0].type.multiArrayType.shape.append(512)
+
 spec.neuralNetwork.preprocessing[0].featureName = "image"
 
 for i in range(len(spec.neuralNetwork.layers)):
@@ -41,6 +45,11 @@ for i in range(len(spec.neuralNetwork.layers)):
     spec.neuralNetwork.layers[i].output[0] = "ArgMax"
 
 spec.neuralNetwork.preprocessing[0].featureName = "image"
+
+spec.description.metadata.versionString = "MOSAIC R4"
+spec.description.metadata.shortDescription = "MOSAIC, ADE20K-Top31"
+spec.description.metadata.author = "Converted to Core ML by Koan-Sin Tan. Original Authors: Weijun Wang and Andrew Howard"
+spec.description.metadata.license = "Apache, https://github.com/mlcommons/mobile_open/blob/main/vision/mosaic/LICENCE.md"
 
 model = ct.models.MLModel(spec)
 

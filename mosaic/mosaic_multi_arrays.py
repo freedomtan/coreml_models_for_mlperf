@@ -6,7 +6,7 @@ import json
 import tensorflow as tf
 import coremltools as ct
 import coremltools.proto.FeatureTypes_pb2 as ft
-from  coremltools.proto.FeatureTypes_pb2 import ArrayFeatureType
+from coremltools.proto.FeatureTypes_pb2 import ArrayFeatureType
 
 pruned = tf.saved_model.load("saved_model").prune("sub_2:0", "ArgMax:0")
 mosaic_original = ct.convert([pruned], "tensorflow")
@@ -20,6 +20,10 @@ spec.description.output[0].shortDescription = "ArgMax"
 # set it back.
 spec.description.output[0].type.multiArrayType.dataType = ArrayFeatureType.INT32
 
+spec.description.output[0].type.multiArrayType.shape.append(1)
+spec.description.output[0].type.multiArrayType.shape.append(512)
+spec.description.output[0].type.multiArrayType.shape.append(512)
+
 for i in range(len(spec.neuralNetwork.layers)):
   # print(spec.neuralNetwork.layers[i].input)
   if len(spec.neuralNetwork.layers[i].input) > 0:
@@ -30,6 +34,11 @@ for i in range(len(spec.neuralNetwork.layers)):
   # if len(spec.neuralNetwork.layers[i].output) > 0:
   if spec.neuralNetwork.layers[i].output[0] == "ArgMax":
     spec.neuralNetwork.layers[i].output[0] = "ArgMax"
+
+spec.description.metadata.versionString = "MOSAIC R4"
+spec.description.metadata.shortDescription = "MOSAIC, ADE20K-Top31"
+spec.description.metadata.author = "Converted to Core ML by Koan-Sin Tan. Original Authors: Weijun Wang and Andrew Howard"
+spec.description.metadata.license = "Apache, https://github.com/mlcommons/mobile_open/blob/main/vision/mosaic/LICENCE.md"
 
 model = ct.models.MLModel(spec)
 
