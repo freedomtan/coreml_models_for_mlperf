@@ -4,7 +4,15 @@ import coremltools as ct
 
 from coremltools.proto.FeatureTypes_pb2 import ArrayFeatureType
 
-mobilebert_model = ct.convert('mobilebert_squad_savedmodels/float/', source='tensorflow', tags={'serve'})
+tf.compat.v1.enable_resource_variables
+
+
+input_nodes = ['input_ids:0', 'input_mask:0', 'segment_ids:0']
+output_nodes = ['end_logits:0', 'start_logits:0']
+tf_model = tf.saved_model.load('mobilebert_squad_savedmodels/float', tags='serve')
+p = tf_model.prune(input_nodes, output_nodes)
+
+mobilebert_model = ct.convert([p], source='tensorflow')
 
 spec = mobilebert_model.get_spec()
 
