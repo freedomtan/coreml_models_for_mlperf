@@ -20,28 +20,12 @@ ssd_model = ct.convert([pruned_model], source='tensorflow', inputs=inputs)
 
 spec = ssd_model.get_spec()
 
-spec.description.input[0].name = "image"
-spec.description.output[0].name = "scores"
+ct.utils.rename_feature(spec, input_node.replace('/', '_'), 'image')
+ct.utils.rename_feature(spec, class_output_node.replace('/', '_'), 'scores')
+ct.utils.rename_feature(spec, bbox_output_node.replace('/', '_'), 'boxes')
+
 spec.description.output[0].shortDescription = "Predicted class scores for each bounding box"
-spec.description.output[1].name = "boxes"
 spec.description.output[1].shortDescription = "Predicted coordinates for each bounding box"
-
-spec.neuralNetwork.preprocessing[0].featureName = "image"
-
-for i in range(len(spec.neuralNetwork.layers)):
-    # print(spec.neuralNetwork.layers[i].input)
-    if len(spec.neuralNetwork.layers[i].input) > 0:
-        if spec.neuralNetwork.layers[i].input[0] == input_node.replace('/','_'):
-            spec.neuralNetwork.layers[i].input[0] = "image"
-
-    # print(spec.neuralNetwork.layers[i].output)
-    # if len(spec.neuralNetwork.layers[i].output) > 0:
-    if spec.neuralNetwork.layers[i].output[0] == class_output_node.replace('/','_'):
-        spec.neuralNetwork.layers[i].output[0] = "scores"
-    if spec.neuralNetwork.layers[i].output[0] == bbox_output_node.replace('/','_'):
-        spec.neuralNetwork.layers[i].output[0] = "boxes"
-
-spec.neuralNetwork.preprocessing[0].featureName = "image"
 
 num_classes = 90
 num_anchors = 2034
@@ -283,7 +267,7 @@ from coremltools.models.pipeline import *
 
 coreml_model_path = "MobileDet.mlmodel"
 
-input_features = [ ("image", datatypes.Array(3, input_height, input_height)),
+input_features = [ ("image", datatypes.Array(1, input_height, input_height, 3)),
                    ("iouThreshold", datatypes.Double()),
                    ("confidenceThreshold", datatypes.Double()) ]
 
